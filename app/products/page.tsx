@@ -41,7 +41,7 @@ interface simpleproduct{
 }
 
 export default function ProductsPage() {
-    const { productImage, productmainSlogan } = productsData;
+    const {productImage, productmainSlogan } = productsData;
     const [category, setCategory] = useState<category[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("全部");
 

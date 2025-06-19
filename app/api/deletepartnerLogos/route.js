@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { pool } from '@/lib/db'
+import { verifyApiKey } from "@/lib/verifyApiKey";
 
 export async function DELETE(request) {
+    const authError = verifyApiKey(request);
+    if (authError) return authError;
+
     try {
         const { searchParams } = new URL(request.url);
         const alt = searchParams.get('alt');
@@ -13,17 +17,13 @@ export async function DELETE(request) {
                 { status: 400 }
             );
         }
-
         const connection = await pool.getConnection();
-        
         // 执行删除操作
         const [result] = await connection.query(
             'DELETE FROM partnerLogos WHERE alt = ?',
             [alt]
         );
-        
         connection.release();
-
         // 检查是否成功删除
         if (result.affectedRows === 0) {
             return NextResponse.json(
@@ -31,12 +31,10 @@ export async function DELETE(request) {
                 { status: 404 }
             );
         }
-
         return NextResponse.json(
             { message: "删除成功", affectedRows: result.affectedRows },
             { status: 200 }
         );
-        
     } catch (error) {
         console.error('删除合作伙伴logo失败:', error);
         return NextResponse.json(

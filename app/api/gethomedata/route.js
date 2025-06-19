@@ -1,14 +1,22 @@
-import {NextResponse} from "next/server";
+import { NextResponse } from "next/server";
 import { pool } from '@/lib/db'
 
+export function verifyApiKey(request) {
+    const apiKey = request.headers.get("x-api-key");
+    if (!apiKey || apiKey !== process.env.ADMIN_SECRET_KEY) {
+        return NextResponse.json({ error: "无效密钥" }, { status: 403 });
+    }
+    return null; // 表示验证通过
+}
 
 export async function GET(request) {
+    
     try {
         // 从连接池获取连接
         const connection = await pool.getConnection()
 
         // 执行查询，获取所有 homeData 表数据
-        const [rows] = await connection.query('SELECT * FROM homeData ORDER BY updated_at DESC LIMIT 1')
+        const [rows] = await connection.query('SELECT * FROM homeData ORDER BY created_at DESC LIMIT 1')
 
         // 释放连接
         connection.release()

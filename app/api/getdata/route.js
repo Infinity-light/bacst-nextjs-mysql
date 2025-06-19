@@ -4,10 +4,10 @@ const mysql = require('mysql2/promise')
 // 创建全局的 MySQL 连接池
 const pool = mysql.createPool({
   connectionLimit: 10,
-  host: '127.0.0.1', // 服务器地址
-  user: 'root',
-  password: '1234567890', // 密码
-  database: 'bacst',
+  host: process.env.MYSQL_HOST || '127.0.0.1',
+  user: process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_PASSWORD || '362880',
+  database: process.env.MYSQL_DATABASE || 'bacst',
 })
 
 export async function GET(request) {

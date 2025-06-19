@@ -9,7 +9,6 @@ const recruitmentData = {
 
 const categories = [
   { id: 1, name: "全部" },
-  { id: 2, name: "技术类" },
   { id: 3, name: "市场类" },
   { id: 4, name: "运营类" },
   { id: 5, name: "人力资源类" },
@@ -17,20 +16,13 @@ const categories = [
 
 const jobs = [
   {
-    id: 1,
-    title: "前端开发工程师",
-    category: "技术类",
-    location: "北京",
-    desc: "负责公司前端项目开发与维护，要求熟悉 React/Vue。",
-  },
-  {
     id: 2,
     title: "市场专员",
     category: "市场类",
     location: "上海",
     desc: "协助市场活动推广与品牌宣传。",
   },
-  {
+  { 
     id: 3,
     title: "招聘主管",
     category: "人力资源类",
@@ -59,11 +51,6 @@ export default function RecruitmentPage() {
             className="w-full h-full object-cover"
           />
         </div>
-        {/* <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-white text-center">
-          <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 text-gray-500 tracking-wide">
-            {bannerTitle}
-          </h1>
-        </div> */}
       </div>
 
       {/* 内容区域 */}

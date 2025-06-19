@@ -1,30 +1,92 @@
 "use client";
 
 import Image from "next/image";
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+
+const aboutBannerInit = "/products.jpg"; // 请将图片放在 public 目录下
+const mainTitleInit = "关于我们";
+const subTitleInit = "我们专注于微型充气泵的研发与制造，致力于为客户提供高品质的产品与解决方案。";
+
+const AboutTextInit = "上海巴克斯通智能科技有限公司办公总部所在：上海市奉贤区海湾旅游区奉炮公路1368号阿莱德科技产业园5号楼2楼，科技园毗邻杭州湾北部，东依自贸区临港新片区，西联上海化学工业区，北靠奉贤新城；距离虹桥国际机场，浦东国际机场和洋山国际深水港均在40分钟车程，构成了“上海40分钟城市圈”和“长三角1.5小时城市半径圈”，紧邻海湾大学城，交通便捷，环境优越；公司同时在上海宝山区湄星路1955弄4号门（机器人产业园）设有销售办事处，公司生产基地位于浙江省宁波市慈溪市周巷镇开发东路488号3楼。公司专业生产和销售智能微型充气泵、轮胎修补液、应急补胎工具、车载应急包和新能源汽车便携充电桩、随车充等充气充电应用产品，公司研发技术、采购运营、品质生产等管理人员在汽车充气泵行业15年以上专业管理服务经验，具备丰富的产品实战经验。公司发展目标为：持续发展成为国内外著名的汽车用品品牌，给客户提供便捷舒适的汽车用品及生活体验，为国内外新能源汽车提供完善配套的充气充电、安全自驾和移动储能产品，并提供持续、热情、贴心服务！公司坚持“以人为本、顾客至上、持续经营、技术创新”为经营宗旨，努力发展壮大公司团队和规模！";
+const AboutImageInit = "/About.png";
+
+const brandIntroductionInit = "巴克斯通以智能微型多功能车载充气泵，轮胎应急补胎工具，新能源汽车充电桩及车载应急包为核心产品，凭借卓越品质与贴心服务，专注为车主提供创新，便捷，安全，可靠的充气充电解决方案产品，致力于以卓越品质与前沿科技，成为行业内的标杆企业！BACST的由来是 “Battery（电池）”、“Air pump（充气泵） ”、“Charging station（充电桩）”、“Service（服务）” 、“Tire（轮胎）”5个英文单词缩写组成，代表了公司经营的主要商品及经营服务理念，基于上述商品类目外，公司始终为客户继续寻找车辆所需求的任何产品，服务广大用车客户群体。追求客户满意，一直是推动我们发展和前进的动力源泉！";
+const operationimageInit = "/operation.png";
+const managementIdeaInit = "公司坚持‘以人为本、顾客至上、持续经营、技术创新’为经营宗旨，努力发展壮大公司团队和规模！";
+const declarationInit = [
+    "1.巴克斯通以优异的产品、技术和服务迎接客户，并传达产品的意义和价值。",
+    "2.巴克斯通为每位客户带去优质的汽车用品生活体验，并提供安全、安心、和谐的汽车生活服务。",
+    "3.巴克斯通为实现人与车的和谐社会做出努力贡献。",
+    "4.巴克斯通为追求汽车行业智能智联发展而发展。",
+    "5.巴克斯通为客户提供的价值和目标不仅仅是销售汽车用品、配件，同时提供适合当下生活方式下汽车用品行业的新产品和服务；我们不断创造新价值，以满足客户对'安全'以及'和谐'为基础的汽车生活需求。"
+];
 
 export default function ProductsPage() {
-    // 你可以根据实际需求将这些数据通过 props 或 API 获取
-    const aboutBanner = "/products.jpg"; // 请将图片放在 public 目录下
-    const mainTitle = "关于我们";
-    const subTitle = "我们专注于微型充气泵的研发与制造，致力于为客户提供高品质的产品与解决方案。";
+    const [aboutBanner, setAboutBanner] = useState(aboutBannerInit);
+    const [mainTitle, setMainTitle] = useState(mainTitleInit);
+    const [subTitle, setSubTitle] = useState(subTitleInit);
 
-    const AboutText = "上海巴克斯通智能科技有限公司办公总部所在：上海市奉贤区海湾旅游区奉炮公路1368号阿莱德科技产业园5号楼2楼，科技园毗邻杭州湾北部，东依自贸区临港新片区，西联上海化学工业区，北靠奉贤新城；距离虹桥国际机场，浦东国际机场和洋山国际深水港均在40分钟车程，构成了“上海40分钟城市圈”和“长三角1.5小时城市半径圈”，紧邻海湾大学城，交通便捷，环境优越；公司同时在上海宝山区湄星路1955弄4号门（机器人产业园）设有销售办事处，公司生产基地位于浙江省宁波市慈溪市周巷镇开发东路488号3楼。公司专业生产和销售智能微型充气泵、轮胎修补液、应急补胎工具、车载应急包和新能源汽车便携充电桩、随车充等充气充电应用产品，公司研发技术、采购运营、品质生产等管理人员在汽车充气泵行业15年以上专业管理服务经验，具备丰富的产品实战经验。公司发展目标为：持续发展成为国内外著名的汽车用品品牌，给客户提供便捷舒适的汽车用品及生活体验，为国内外新能源汽车提供完善配套的充气充电、安全自驾和移动储能产品，并提供持续、热情、贴心服务！公司坚持“以人为本、顾客至上、持续经营、技术创新”为经营宗旨，努力发展壮大公司团队和规模！"
-    const AboutImage = "/About.png"
-    
-    const brandIntroduction = "巴克斯通以智能微型多功能车载充气泵，轮胎应急补胎工具，新能源汽车充电桩及车载应急包为核心产品，凭借卓越品质与贴心服务，专注为车主提供创新，便捷，安全，可靠的充气充电解决方案产品，致力于以卓越品质与前沿科技，成为行业内的标杆企业！BACST的由来是 “Battery（电池）”、“Air pump（充气泵） ”、“Charging station（充电桩）”、“Service（服务）” 、“Tire（轮胎）”5个英文单词缩写组成，代表了公司经营的主要商品及经营服务理念，基于上述商品类目外，公司始终为客户继续寻找车辆所需求的任何产品，服务广大用车客户群体。追求客户满意，一直是推动我们发展和前进的动力源泉！"
-    
-    const operationimage = "/operation.png"
+    const [AboutText, setAboutText] = useState(AboutTextInit);
+    const [AboutImage, setAboutImage] = useState(AboutImageInit);
 
-    const managementIdea = "公司坚持‘以人为本、顾客至上、持续经营、技术创新’为经营宗旨，努力发展壮大公司团队和规模！"
+    const [brandIntroduction, setBrandIntroduction] = useState(brandIntroductionInit);
+    const [operationImage, setOperationImage] = useState(operationimageInit);
+    const [managementIdea, setManagementIdea] = useState(managementIdeaInit);
+    const [declaration, setDeclaration] = useState(declarationInit);
 
-    const declaration = [
-        "1.巴克斯通以优异的产品、技术和服务迎接客户，并传达产品的意义和价值。",
-        "2.巴克斯通为每位客户带去优质的汽车用品生活体验，并提供安全、安心、和谐的汽车生活服务。",
-        "3.巴克斯通为实现人与车的和谐社会做出努力贡献。",
-        "4.巴克斯通为追求汽车行业智能智联发展而发展。",
-        "5.巴克斯通为客户提供的价值和目标不仅仅是销售汽车用品、配件，同时提供适合当下生活方式下汽车用品行业的新产品和服务；我们不断创造新价值，以满足客户对'安全'以及'和谐'为基础的汽车生活需求。"
-    ];
+    useEffect(() => {
+        fetchgetabout()
+        fetchaboutdetailData()
+        fetchcompanyCulture()
+    }, [])
+    const fetchgetabout = async () => {
+        try {
+            // 发起API请求获取首页数据
+            const res = await fetch('/api/getaboutData')
+            const json = await res.json()
+            const data = json.data[0]
+            // 更新页面状态
+            // 需要使用 useState 来定义状态和对应的 setter
+            setAboutBanner(data.aboutBanner)
+            setMainTitle(data.mainTitle)
+            setSubTitle(data.subTitle)
+
+        } catch (error) {
+            // 错误处理
+            console.error('获取首页数据失败:', error)
+        }
+    }
+    const fetchaboutdetailData = async () => {
+        try {
+            // 发起API请求获取首页数据
+            const res = await fetch('/api/getaboutdetailData')
+            const json = await res.json()
+            const data = json.data[0]
+            // 需要使用 useState 来定义状态和对应的 setter
+            setAboutText(data.AboutText)
+            setAboutImage(data.AboutImage)
+        } catch (error) {
+            // 错误处理
+            console.error('获取首页数据失败:', error)
+        }
+    }
+
+    const fetchcompanyCulture = async () => {
+        try {
+            // 发起API请求获取首页数据
+            const res = await fetch('/api/getcompanyCulture')
+            const json = await res.json()
+            const data = json.data[0]
+            // 需要使用 useState 来定义状态和对应的 setter
+            setBrandIntroduction(data.brandIntroduction)
+            setOperationImage(data.operationImage)
+            setManagementIdea(data.managementIdea)
+            setDeclaration(data.declaration)
+        } catch (error) {
+            // 错误处理
+            console.error('获取首页数据失败:', error)
+        }
+    }
     return (
         <main>
             <div className="relative w-full">
@@ -34,7 +96,7 @@ export default function ProductsPage() {
                         src={aboutBanner}
                         alt="关于我们"
                         fill
-                        style={{objectFit: "cover"}}
+                        style={{ objectFit: "cover" }}
                         priority
                     />
                 </div>
@@ -54,7 +116,7 @@ export default function ProductsPage() {
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
                     {/* 左侧：公司简介 */}
                     <div className="flex-1 text-center md:text-left">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
                             ABOUT COMPANY
                         </h2>
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F]">
@@ -78,11 +140,11 @@ export default function ProductsPage() {
             <section className="w-full px-6 py-16 bg-gray-50">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
                     <div className="flex-1 text-center md:text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
-                          BRAND INTRODUCTION
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
+                            BRAND INTRODUCTION
                         </h2>
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F]">
-                          品牌介绍
+                            品牌介绍
                         </h2>
                         <p className="text-lg leading-relaxed text-gray-700">
                             {brandIntroduction}
@@ -94,7 +156,7 @@ export default function ProductsPage() {
             <section className="w-full px-6 py-16 bg-gray-100">
                 <div className="max-w-7xl mx-auto flex flex-col items-center gap-10">
                     <div className="flex-1 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
                             BUSINESS DEVELOPMENT
                         </h2>
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F]">
@@ -103,7 +165,7 @@ export default function ProductsPage() {
                     </div>
                     <div className="flex-1 w-full flex justify-center">
                         <img
-                            src={operationimage}
+                            src={operationImage}
                             alt="业务开展"
                             className="w-full max-w-2xl h-auto rounded-lg shadow-lg object-cover"
                         />
@@ -112,8 +174,8 @@ export default function ProductsPage() {
             </section>
 
             <section className="w-full px-6 py-16 bg-white">
-              <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
-                  {/* 右侧：公司图片 */}
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
+                    {/* 右侧：公司图片 */}
                     <div className="flex-1 text-center md:text-center">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
                             MANAGEMENT IDEA
@@ -132,8 +194,8 @@ export default function ProductsPage() {
             </section>
 
             <section className="w-full px-6 py-16 bg-white">
-              <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
-                  {/* 右侧：公司图片 */}
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
+                    {/* 右侧：公司图片 */}
                     <div className="flex-1 text-center md:text-center">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#DD773F] font-serif">
                             SERVICE DECLARATION

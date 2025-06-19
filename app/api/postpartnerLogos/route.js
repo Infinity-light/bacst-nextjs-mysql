@@ -1,8 +1,11 @@
 import {NextResponse} from "next/server";
 import { pool } from '@/lib/db'
-
+import { verifyApiKey } from "@/lib/verifyApiKey";
 
 export async function POST(request) {
+    const authError = verifyApiKey(request);
+    if (authError) return authError;
+
     try {
         // 从连接池获取连接
         const connection = await pool.getConnection()
@@ -22,7 +25,7 @@ export async function POST(request) {
             insertId: result.insertId 
         }, { status: 201 })
     } catch (error) {
-        console.error('Error inserting homeData:', error)
+        console.error('Error inserting partnerLogos:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }

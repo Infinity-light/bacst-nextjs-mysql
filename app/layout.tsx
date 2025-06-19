@@ -3,15 +3,18 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import localFont from "next/font/local";
 
-const geistSans = Geist({
+const geistSans = localFont({
+    src: "../public/fonts/Geist-Regular.woff2",
     variable: "--font-geist-sans",
-    subsets: ["latin"],
+    display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+    src: "../public/fonts/GeistMono-Regular.woff2",
     variable: "--font-geist-mono",
-    subsets: ["latin"],
+    display: "swap",
 });
 
 export const metadata: Metadata = {
