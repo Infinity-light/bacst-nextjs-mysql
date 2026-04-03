@@ -1,18 +1,37 @@
-# 用 Node.js 官方的轻量镜像作为基础
-FROM node:18
+# 使用 Node.js 20 Alpine 轻量镜像
+FROM node:20-alpine AS base
 
-# 设置容器中的工作目录为 /app
+# 安装依赖阶段
+FROM base AS deps
 WORKDIR /app
-
-# 复制 package.json 和 lock 文件，安装依赖
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN npm ci
 
-# 把你项目的全部源代码复制进去
+# 构建阶段
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# 构建生产文件（如果你是生产环境）
 RUN npm run build
 
-# 设置容器启动时执行的命令（开发环境可以是 dev）
-CMD ["npm", "run", "dev"]
+# 生产运行阶段
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]

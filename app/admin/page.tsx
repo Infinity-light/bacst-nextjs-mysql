@@ -23,6 +23,15 @@ interface Product {
   updatedAt?: string;
 }
 
+// 新增：资质证书类型
+interface Certification {
+  id: number;
+  src: string;
+  title: string;
+  subtitle?: string;
+  created_at?: string;
+}
+
 export default function AdminPage() {
   const [apiKey, setApiKey] = useState<string>("");
 
@@ -61,6 +70,7 @@ export default function AdminPage() {
 
   const [name, setName] = useState("");
   const [productcategory, setProductCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [mainimage, setMainimage] = useState("");
   const [images, setImages] = useState<string[]>([]);
@@ -111,9 +121,127 @@ export default function AdminPage() {
   const [postshopURLDataloading, setPostshopURLDataloading] = useState(false);
   const [postshopURLDatamessage, setPostshopURLDatamessage] = useState("");
 
+  // 新增：资质证书管理状态
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [certSrc, setCertSrc] = useState("");
+  const [certTitle, setCertTitle] = useState("");
+  const [certSubtitle, setCertSubtitle] = useState("");
+  const [postCertLoading, setPostCertLoading] = useState(false);
+  const [postCertMessage, setPostCertMessage] = useState("");
+  const [deleteCertLoading, setDeleteCertLoading] = useState(false);
+  const [deleteCertMessage, setDeleteCertMessage] = useState("");
+
+  // 招聘设置与职位管理状态
+  const [recBannerImage, setRecBannerImage] = useState("");
+  const [recBannerTitle, setRecBannerTitle] = useState("");
+  const [postRecruitmentSettingsLoading, setPostRecruitmentSettingsLoading] = useState(false);
+  const [postRecruitmentSettingsMessage, setPostRecruitmentSettingsMessage] = useState("");
+  const [jobCategories, setJobCategories] = useState<string[]>([]);
+  const [newJobCategoryName, setNewJobCategoryName] = useState("");
+  const [postJobCategoryLoading, setPostJobCategoryLoading] = useState(false);
+  const [postJobCategoryMessage, setPostJobCategoryMessage] = useState("");
+  const [deleteJobCategoryLoading, setDeleteJobCategoryLoading] = useState(false);
+  const [deleteJobCategoryMessage, setDeleteJobCategoryMessage] = useState("");
+
+  interface Job {
+    id: number;
+    title: string;
+    category: string;
+    location: string;
+    description?: string;
+    created_at?: string;
+  }
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobCategory, setJobCategory] = useState("");
+  const [jobLocation, setJobLocation] = useState("");
+  const [jobDescription, setJobDescription] = useState("");
+  const [postJobLoading, setPostJobLoading] = useState(false);
+  const [postJobMessage, setPostJobMessage] = useState("");
+  const [deleteJobLoading, setDeleteJobLoading] = useState(false);
+  const [deleteJobMessage, setDeleteJobMessage] = useState("");
+
   useEffect(() => {
     fetchPartnerLogos();
   }, [])
+
+  // 获取产品分类列表
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch('/api/getproductcategory');
+        const json = await res.json();
+        const list = Array.isArray(json?.data) ? json.data.map((row: any) => row.category).filter(Boolean) : [];
+        setCategories(list);
+      } catch (error) {
+        console.error('获取产品分类失败:', error);
+        setCategories([]);
+      }
+    };
+    fetchCategories();
+  }, [])
+
+  // 新增：获取资质证书列表
+  useEffect(() => {
+    fetchCertifications();
+  }, [])
+
+  // 新增：获取招聘设置、职位分类与职位列表
+  useEffect(() => {
+    const fetchRecruitmentSettings = async () => {
+      try {
+        const res = await fetch('/api/getrecruitmentsettings');
+        const json = await res.json();
+        const data = json?.data;
+        if (data) {
+          setRecBannerImage(data.bannerImage || '');
+          setRecBannerTitle(data.bannerTitle || '');
+        }
+      } catch (error) {
+        console.error('获取招聘设置失败:', error);
+      }
+    };
+
+    const fetchJobCategories = async () => {
+      try {
+        const res = await fetch('/api/getjobcategories');
+        const json = await res.json();
+        const list = Array.isArray(json?.data) ? json.data.map((row: any) => row.category).filter(Boolean) : [];
+        setJobCategories(list);
+      } catch (error) {
+        console.error('获取职位分类失败:', error);
+        setJobCategories([]);
+      }
+    };
+
+    const fetchJobsList = async () => {
+      try {
+        const res = await fetch('/api/getjobs');
+        const json = await res.json();
+        const list = Array.isArray(json?.data) ? json.data : [];
+        setJobs(list);
+      } catch (error) {
+        console.error('获取职位列表失败:', error);
+        setJobs([]);
+      }
+    };
+
+    fetchRecruitmentSettings();
+    fetchJobCategories();
+    fetchJobsList();
+  }, [])
+
+  const fetchCertifications = async () => {
+    try {
+      const res = await fetch('/api/getcertifications');
+      const json = await res.json();
+      const list = Array.isArray(json?.data) ? json.data : [];
+      setCertifications(list);
+    } catch (error) {
+      console.error('获取资质证书失败:', error);
+      setCertifications([]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,6 +375,218 @@ export default function AdminPage() {
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  // 新增：提交资质证书
+  const postCertifications = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPostCertLoading(true);
+    setPostCertMessage("");
+    try {
+      const res = await fetch("/api/postcertifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey
+        },
+        body: JSON.stringify({
+          src: certSrc,
+          title: certTitle,
+          subtitle: certSubtitle,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPostCertMessage("上传成功！ID: " + data.insertId);
+        setCertSrc("");
+        setCertTitle("");
+        setCertSubtitle("");
+        await fetchCertifications();
+      } else {
+        setPostCertMessage("上传失败: " + (data.error || "未知错误"));
+      }
+    } catch (error) {
+      setPostCertMessage("请求出错: " + String(error));
+    }
+    setPostCertLoading(false);
+  };
+
+  // 新增：删除资质证书
+  const deleteCertification = async (title: string) => {
+    if (!title) return;
+    setDeleteCertLoading(true);
+    setDeleteCertMessage("");
+    try {
+      const res = await fetch(`/api/deletecertification?title=${encodeURIComponent(title)}`, {
+        method: 'DELETE',
+        headers: {
+          'x-api-key': apiKey
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDeleteCertMessage(`删除成功: ${title}`);
+        await fetchCertifications();
+      } else {
+        setDeleteCertMessage("删除失败: " + (data.error || "未知错误"));
+      }
+    } catch (error) {
+      setDeleteCertMessage("请求出错: " + String(error));
+    }
+    setDeleteCertLoading(false);
+  };
+
+  // 招聘设置提交
+  const postRecruitmentSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPostRecruitmentSettingsLoading(true);
+    setPostRecruitmentSettingsMessage("");
+    try {
+      const res = await fetch('/api/postrecruitmentsettings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({
+          bannerImage: recBannerImage,
+          bannerTitle: recBannerTitle,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPostRecruitmentSettingsMessage('上传成功！ID: ' + data.insertId);
+      } else {
+        setPostRecruitmentSettingsMessage('上传失败: ' + (data.error || '未知错误'));
+      }
+    } catch (error) {
+      setPostRecruitmentSettingsMessage('请求出错: ' + String(error));
+    }
+    setPostRecruitmentSettingsLoading(false);
+  };
+
+  // 新增职位分类
+  const postJobCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPostJobCategoryLoading(true);
+    setPostJobCategoryMessage("");
+    try {
+      const res = await fetch('/api/postjobcategory', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({ category: newJobCategoryName }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPostJobCategoryMessage('上传成功！ID: ' + data.insertId);
+        setNewJobCategoryName('');
+        // 刷新分类
+        const res2 = await fetch('/api/getjobcategories');
+        const json2 = await res2.json();
+        const list = Array.isArray(json2?.data) ? json2.data.map((row: any) => row.category).filter(Boolean) : [];
+        setJobCategories(list);
+      } else {
+        setPostJobCategoryMessage('上传失败: ' + (data.error || '未知错误'));
+      }
+    } catch (error) {
+      setPostJobCategoryMessage('请求出错: ' + String(error));
+    }
+    setPostJobCategoryLoading(false);
+  };
+
+  // 删除职位分类
+  const deleteJobCategory = async (category: string) => {
+    setDeleteJobCategoryLoading(true);
+    setDeleteJobCategoryMessage('');
+    try {
+      const res = await fetch(`/api/deletejobcategory?category=${encodeURIComponent(category)}`, {
+        method: 'DELETE',
+        headers: { 'x-api-key': apiKey },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDeleteJobCategoryMessage(`删除成功: ${category}`);
+        // 刷新分类
+        const res2 = await fetch('/api/getjobcategories');
+        const json2 = await res2.json();
+        const list = Array.isArray(json2?.data) ? json2.data.map((row: any) => row.category).filter(Boolean) : [];
+        setJobCategories(list);
+      } else {
+        setDeleteJobCategoryMessage('删除失败: ' + (data.error || '未知错误'));
+      }
+    } catch (error) {
+      setDeleteJobCategoryMessage('请求出错: ' + String(error));
+    }
+    setDeleteJobCategoryLoading(false);
+  };
+
+  // 新增职位
+  const postJob = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPostJobLoading(true);
+    setPostJobMessage('');
+    try {
+      const res = await fetch('/api/postjob', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey
+        },
+        body: JSON.stringify({
+          title: jobTitle,
+          category: jobCategory,
+          location: jobLocation,
+          description: jobDescription,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPostJobMessage('上传成功！ID: ' + data.insertId);
+        setJobTitle('');
+        setJobCategory('');
+        setJobLocation('');
+        setJobDescription('');
+        // 刷新职位列表
+        const res2 = await fetch('/api/getjobs');
+        const json2 = await res2.json();
+        const list = Array.isArray(json2?.data) ? json2.data : [];
+        setJobs(list);
+      } else {
+        setPostJobMessage('上传失败: ' + (data.error || '未知错误'));
+      }
+    } catch (error) {
+      setPostJobMessage('请求出错: ' + String(error));
+    }
+    setPostJobLoading(false);
+  };
+
+  // 删除职位
+  const deleteJob = async (title: string) => {
+    setDeleteJobLoading(true);
+    setDeleteJobMessage('');
+    try {
+      const res = await fetch(`/api/deletejob?title=${encodeURIComponent(title)}`, {
+        method: 'DELETE',
+        headers: { 'x-api-key': apiKey },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDeleteJobMessage(`删除成功: ${title}`);
+        // 刷新职位列表
+        const res2 = await fetch('/api/getjobs');
+        const json2 = await res2.json();
+        const list = Array.isArray(json2?.data) ? json2.data : [];
+        setJobs(list);
+      } else {
+        setDeleteJobMessage('删除失败: ' + (data.error || '未知错误'));
+      }
+    } catch (error) {
+      setDeleteJobMessage('请求出错: ' + String(error));
+    }
+    setDeleteJobLoading(false);
   };
 
   const postproduct_categories = async (e: React.FormEvent) => {
@@ -968,14 +1308,20 @@ export default function AdminPage() {
           {/* 产品分类 */}
           <div className="flex-1 min-w-[280px]">
             <label className="block text-lg font-medium text-gray-700 mb-2">产品分类</label>
-            <input
-              type="text"
+            <select
               className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
               value={productcategory}
               onChange={(e) => setProductCategory(e.target.value)}
-              placeholder="例如：胎充气修补解决方案"
               required
-            />
+            >
+              <option value="">请选择分类</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+              {categories.length === 0 && (
+                <option value="" disabled>暂无分类，请先在上方添加</option>
+              )}
+            </select>
           </div>
         </div>
 
@@ -1913,6 +2259,275 @@ export default function AdminPage() {
         )}
       </form>
       {/* ----------------------------------------------- */}
+
+      <h2 className="text-3xl font-bold mb-8 border-b pb-4 text-gray-800 mt-10">资质与证书管理</h2>
+
+      {/* 添加资质证书 */}
+      <form onSubmit={postCertifications} className="space-y-8">
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">证书标题</label>
+          <input
+            type="text"
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={certTitle}
+            onChange={(e) => setCertTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">证书副标题（可选）</label>
+          <input
+            type="text"
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={certSubtitle}
+            onChange={(e) => setCertSubtitle(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">上传证书图片</label>
+          <input
+            type="file"
+            accept="image/*"
+            className="border border-gray-600 rounded px-3 py-2 w-full text-gray-900"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                try {
+                  const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                  } as RequestInit);
+
+                  if (response.ok) {
+                    const data = await response.json();
+                    setCertSrc(data.filePath);
+                  } else {
+                    throw new Error('上传失败');
+                  }
+                } catch (error) {
+                  console.error('文件上传错误:', error);
+                  alert('文件上传失败，请重试');
+                }
+              }
+            }}
+            required
+          />
+          {certSrc && (
+            <div className="text-sm text-gray-600">已上传: {certSrc}</div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-[#DD773F] text-white py-3 rounded text-lg font-semibold hover:bg-[#c05e2d] transition"
+          disabled={postCertLoading}
+        >
+          {postCertLoading ? "上传中..." : "上传"}
+        </button>
+        {postCertMessage && (
+          <div className="mt-4 text-center text-green-600 text-lg font-medium">
+            {postCertMessage}
+          </div>
+        )}
+      </form>
+
+      {/* 资质证书列表与删除 */}
+      <div className="space-y-6 mt-10">
+        <h3 className="text-2xl font-semibold text-gray-800">证书列表</h3>
+        {certifications.length === 0 && (
+          <div className="text-gray-500 text-sm bg-gray-50 p-3 rounded">
+            暂无证书数据。
+          </div>
+        )}
+        {certifications.map((item) => (
+          <div key={item.id} className="flex items-center justify-between border p-3 rounded">
+            <div className="flex items-center gap-4">
+              {item.src && (
+                <img src={item.src} alt={item.title} className="w-16 h-16 object-cover rounded" />
+              )}
+              <div>
+                <div className="text-gray-900 font-medium">{item.title}</div>
+                {item.subtitle && (
+                  <div className="text-gray-600 text-sm">{item.subtitle}</div>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`确定要删除证书「${item.title}」吗？`)) {
+                  deleteCertification(item.title);
+                }
+              }}
+              className="min-w-[120px] bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-800 text-base px-4 py-2 rounded-md"
+              disabled={deleteCertLoading}
+            >
+              {deleteCertLoading ? "删除中..." : "删除"}
+            </button>
+          </div>
+        ))}
+        {deleteCertMessage && (
+          <div className="mt-2 text-center text-red-600 text-sm">{deleteCertMessage}</div>
+        )}
+      </div>
+
+      {/* ----------------------------------------------- */}
+
+      {/* 招聘与职位管理 */}
+      <h2 className="text-3xl font-bold mb-8 border-b pb-4 text-gray-800 mt-10">招聘与职位管理</h2>
+
+      {/* 职位分类管理 */}
+      <h3 className="text-2xl font-semibold text-gray-800 mt-10">职位分类管理</h3>
+      <form onSubmit={postJobCategory} className="space-y-6">
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">新增分类名称</label>
+          <input
+            type="text"
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={newJobCategoryName}
+            onChange={(e) => setNewJobCategoryName(e.target.value)}
+            placeholder="例如：市场类"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-[#DD773F] text-white py-3 rounded text-lg font-semibold hover:bg-[#c05e2d] transition"
+          disabled={postJobCategoryLoading}
+        >
+          {postJobCategoryLoading ? "上传中..." : "新增分类"}
+        </button>
+        {postJobCategoryMessage && (
+          <div className="mt-4 text-center text-green-600 text-lg font-medium">
+            {postJobCategoryMessage}
+          </div>
+        )}
+      </form>
+
+      <div className="space-y-4 mt-6">
+        {jobCategories.length === 0 && (
+          <div className="text-gray-500 text-sm bg-gray-50 p-3 rounded">暂无分类数据。</div>
+        )}
+        {jobCategories.map((cat) => (
+          <div key={cat} className="flex items-center justify-between border p-3 rounded">
+            <div className="text-gray-900 font-medium">{cat}</div>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`确定要删除分类「${cat}」吗？`)) {
+                  deleteJobCategory(cat);
+                }
+              }}
+              className="min-w-[120px] bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-800 text-base px-4 py-2 rounded-md"
+              disabled={deleteJobCategoryLoading}
+            >
+              {deleteJobCategoryLoading ? "删除中..." : "删除"}
+            </button>
+          </div>
+        ))}
+        {deleteJobCategoryMessage && (
+          <div className="mt-2 text-center text-red-600 text-sm">{deleteJobCategoryMessage}</div>
+        )}
+      </div>
+
+      {/* 职位管理 */}
+      <h3 className="text-2xl font-semibold text-gray-800 mt-10">职位管理</h3>
+      <form onSubmit={postJob} className="space-y-6">
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">职位名称</label>
+          <input
+            type="text"
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            placeholder="例如：市场专员"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">工作地点</label>
+          <input
+            type="text"
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={jobLocation}
+            onChange={(e) => setJobLocation(e.target.value)}
+            placeholder="例如：上海"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">职位分类</label>
+          <select
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={jobCategory}
+            onChange={(e) => setJobCategory(e.target.value)}
+            required
+          >
+            <option value="" disabled>请选择分类</option>
+            {jobCategories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700 mb-2">职位描述</label>
+          <textarea
+            className="w-full border border-gray-600 px-4 py-2 rounded text-gray-900"
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+            placeholder="例如：协助市场活动推广与品牌宣传"
+            rows={4}
+          />
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-[#DD773F] text-white py-3 rounded text-lg font-semibold hover:bg-[#c05e2d] transition"
+          disabled={postJobLoading}
+        >
+          {postJobLoading ? "上传中..." : "新增职位"}
+        </button>
+        {postJobMessage && (
+          <div className="mt-4 text-center text-green-600 text-lg font-medium">
+            {postJobMessage}
+          </div>
+        )}
+      </form>
+
+      <div className="space-y-4 mt-6">
+        {jobs.length === 0 && (
+          <div className="text-gray-500 text-sm bg-gray-50 p-3 rounded">暂无职位数据。</div>
+        )}
+        {jobs.map((item) => (
+          <div key={item.id} className="flex items-center justify-between border p-3 rounded">
+            <div>
+              <div className="text-gray-900 font-medium">{item.title}</div>
+              <div className="text-gray-600 text-sm">{item.location} · {item.category}</div>
+              {item.description && (
+                <div className="text-gray-600 text-sm mt-1">{item.description}</div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`确定要删除职位「${item.title}」吗？`)) {
+                  deleteJob(item.title);
+                }
+              }}
+              className="min-w-[120px] bg-red-100 text-red-700 hover:bg-red-200 hover:text-red-800 text-base px-4 py-2 rounded-md"
+              disabled={deleteJobLoading}
+            >
+              {deleteJobLoading ? "删除中..." : "删除"}
+            </button>
+          </div>
+        ))}
+        {deleteJobMessage && (
+          <div className="mt-2 text-center text-red-600 text-sm">{deleteJobMessage}</div>
+        )}
+      </div>
+
+      
     </div>
   );
 }

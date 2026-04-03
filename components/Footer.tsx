@@ -15,7 +15,7 @@ import React, { useState, useEffect } from 'react'
 //     adddress,
 //     email,
 // }
-
+    const gongan = "aaa"
 export default function Footer() {
 
     const [address, setaddress] = useState("x上海市奉贤区海湾旅游区奉炮公路1368号阿莱德科技园5号楼2楼");
@@ -73,27 +73,14 @@ export default function Footer() {
                 <div className="flex flex-col items-start gap-4">
                     <div className="flex items-center gap-2">
                         <Image
-                            src="/bakesit_logo_o.svg"
-                            alt="Bakesit 图标"
-                            width={40}
-                            height={40}
-                            priority
-                        />
-                        <Image
-                            src="/bakesit_CNlogo_o.svg"
-                            alt="Bakesit 中文标"
-                            width={100}
-                            height={40}
-                            priority
-                        />
-                        <Image
-                            src="/bakesit_ENlogo_o.svg"
-                            alt="Bakesit 英文标"
-                            width={100}
-                            height={40}
+                            src="/BACSRTTT.jpg"
+                            alt="BACSRTTT 图标"
+                            width={300}
+                            height={50}
                             priority
                         />
                     </div>
+                    <p className="text-sm text-gray-500">沪ICP备2025110082号-1</p>
                     <p className="text-sm text-gray-500">沪ICP备2025110082号-1</p>
                 </div>
 
@@ -119,7 +106,7 @@ export default function Footer() {
                             />
                             <p className="text-xs mt-2 text-gray-600">微信</p>
                         </div>
-                        
+
                         {/* 抖音小店二维码 */}
                         <div className="flex flex-col items-center">
                             <Image

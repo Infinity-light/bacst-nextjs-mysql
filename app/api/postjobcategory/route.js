@@ -1,0 +1,22 @@
+import { NextResponse } from "next/server";
+import { pool } from '@/lib/db'
+import { verifyApiKey } from "@/lib/verifyApiKey";
+
+export async function POST(request) {
+  const authError = verifyApiKey(request);
+  if (authError) return authError;
+
+  try {
+    const connection = await pool.getConnection();
+    const data = await request.json();
+    const [result] = await connection.query(
+      'INSERT INTO job_categories SET ?',
+      data
+    );
+    connection.release();
+    return NextResponse.json({ message: 'Data inserted successfully', insertId: result.insertId }, { status: 201 });
+  } catch (error) {
+    console.error('Error inserting job category:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}

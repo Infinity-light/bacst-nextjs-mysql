@@ -31,10 +31,10 @@ interface PartnerLogo {
     src: string;
     alt: string;
     // 如果您的 API 返回了 created_at 和 updated_at 并且您可能在组件中使用它们，也可以添加
-    created_at?: string; 
+    created_at?: string;
     updated_at?: string;
 }
-  
+
 export default function Home() {
     //const { bannerImage, mainSlogan, subSlogan } =
     //const {ProfileText, CompanyImage} = homeprofileData
@@ -42,20 +42,20 @@ export default function Home() {
     const [bannerImage, setBannerImage] = useState("/home.jpg");
     const [mainSlogan, setMainSlogan] = useState("专业制造微型充气泵");
     const [subSlogan, setSubSlogan] = useState("公司优势：资深的研发团队、年产能1500万台、86,666平方米制造基地、行业标准主要起草单位、国内外车厂主要战略合作伙伴");
-    
+
     const [ProfileText, setProfileText] = useState("是一家专注于微型充气泵研发与制造的高新技术企业，拥有资深的研发团队和86,666平方米现代化制造基地。年产能达1500万台，是行业标准主要起草单位，长期与国内外知名车厂合作，致力于为客户提供高品质的产品与解决方案。");
     const [CompanyImage, setCompanyImage] = useState("/company.jpg");
-    
+
     //const [src, setSrc] = useState("/partners/lix.jpg");
     //const [alt, setAlt] = useState("理想");
     const [partnerLogos, setPartnerLogos] = useState<PartnerLogo[]>([]);
     //const [posthomedataloading, setposthomedataloading] = useState(false);
-    
+
 
     useEffect(() => {
         fetchhomeData()
         fetchhomeprofileData()
-        fetchPartnerLogos()    
+        fetchPartnerLogos()
         ;
     }, [])
     const fetchhomeData = async () => {
@@ -119,7 +119,7 @@ export default function Home() {
               </div>
               {/* 内容部分 */}
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-white text-center">
-                  <h1 className="text-3xl md:text-5xl font-bold mb-6 text-[#DD773F]">
+                  <h1 className="text-3xl md:text-5xl font-bold mb-6 text-[#DD773F] -translate-y-28">
                       {mainSlogan}
                   </h1>
                   <p className="text-xl md:text-2xl max-w-5xl">

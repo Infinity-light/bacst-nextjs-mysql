@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { pool } from '@/lib/db'
+import { sendEmail } from "@/lib/senEmail";
 
 
 export async function POST(request) {
@@ -13,6 +14,7 @@ export async function POST(request) {
         if (!name || !tophone || !message || !purpose) {
             return res.status(400).json({ error: "缺少必要字段" });
         }
+
         await sendEmail({ name, tophone, message, purpose });
         
         // 释放连接

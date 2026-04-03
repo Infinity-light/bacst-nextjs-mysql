@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     domains: ['bacst-1334759377.cos.ap-guangzhou.myqcloud.com'],
   },
