@@ -5,9 +5,9 @@ APP_NAME="bacst-nextjs-mysql"
 DEPLOY_DIR="/opt/apps"
 APP_DIR="${DEPLOY_DIR}/${APP_NAME}"
 APP_PORT="3000"
-DOMAIN_ENABLED="false"
-DOMAIN_NAME="localhost"
-HTTPS_ENABLED="false"
+DOMAIN_ENABLED="true"
+DOMAIN_NAME="bacst.cn"
+HTTPS_ENABLED="true"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'

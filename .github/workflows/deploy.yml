@@ -23,35 +23,50 @@ jobs:
             set -e
             cd /opt/apps
 
+            # Configure Docker mirror for China servers
+            sudo mkdir -p /etc/docker
+            cat << 'DAEMON_EOF' | sudo tee /etc/docker/daemon.json > /dev/null
+            {
+              "registry-mirrors": [
+                "https://docker.1ms.run",
+                "https://docker.mybacc.com",
+                "https://docker.xuanyuan.me"
+              ]
+            }
+            DAEMON_EOF
+            sudo systemctl restart docker || true
+            sleep 3
+
             # Clone or update the repository using GitHub token
-            REPO_URL="https://xunteryeah:${{ secrets.GH_TOKEN }}@github.com/xunteryeah/bacst-nextjs-mysql.git"
-            
+            REPO_URL="https://Infinity-light:${{ secrets.GH_TOKEN }}@github.com/Infinity-light/bacst-nextjs-mysql.git"
+
             if [ -d "bacst-nextjs-mysql/.git" ]; then
               cd bacst-nextjs-mysql
               git fetch origin main
               git reset --hard origin/main
             else
               rm -rf bacst-nextjs-mysql
-              git clone $REPO_URL
+              git clone --depth 1 $REPO_URL
               cd bacst-nextjs-mysql
             fi
 
             # Create .env file with secrets
-            cat > .env << 'ENVEOF'
+            cat > .env << ENVEOF
+            MYSQL_HOST=${{ secrets.MYSQL_HOST }}
+            MYSQL_PORT=${{ secrets.MYSQL_PORT }}
+            MYSQL_USER=${{ secrets.MYSQL_USER }}
+            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+            ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }}
+            EMAIL_USER=${{ secrets.EMAIL_USER }}
+            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+            EMAIL_TO=${{ secrets.EMAIL_TO }}
+            TENCENT_COS_SECRET_ID=${{ secrets.TENCENT_COS_SECRET_ID }}
+            TENCENT_COS_SECRET_KEY=${{ secrets.TENCENT_COS_SECRET_KEY }}
+            TENCENT_COS_BUCKET=${{ secrets.TENCENT_COS_BUCKET }}
+            TENCENT_COS_REGION=${{ secrets.TENCENT_COS_REGION }}
             ENVEOF
-            echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-            echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
-            echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-            echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-            echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-            echo "ADMIN_SECRET_KEY=${{ secrets.ADMIN_SECRET_KEY }}" >> .env
-            echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
-            echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
-            echo "EMAIL_TO=${{ secrets.EMAIL_TO }}" >> .env
-            echo "TENCENT_COS_SECRET_ID=${{ secrets.TENCENT_COS_SECRET_ID }}" >> .env
-            echo "TENCENT_COS_SECRET_KEY=${{ secrets.TENCENT_COS_SECRET_KEY }}" >> .env
-            echo "TENCENT_COS_BUCKET=${{ secrets.TENCENT_COS_BUCKET }}" >> .env
-            echo "TENCENT_COS_REGION=${{ secrets.TENCENT_COS_REGION }}" >> .env
+            sed -i 's/^ *//' .env
 
             # Build and start containers
             docker compose build --no-cache
